@@ -1,0 +1,100 @@
+body {
+	background-color: #fdfeff;
+	color: darkblue;
+	font-family: Calibri;
+	font-size: 11pt;
+	margin: 12px;
+}
+table{
+  text-align: left; 
+  background-color: rgb(204, 255, 255);
+  border:0;
+  cellpadding:0;
+  cellspacing:0;
+  width:90%;
+}
+
+tr td{
+  text-align: left; 
+  border:1px;
+  cellpadding:0;
+  cellspacing:0;
+}
+
+.tdCaption{
+  vertical-align: top;
+  text-align:right;
+  width:150px;
+}
+
+.tdValue{
+  vertical-align: top;
+  text-align:left;
+  width:160px;
+  padding: 0px 0px 0px 5px;
+}
+.tdDescription{
+  vertical-align: top;
+  text-align:left;
+  width:300px;
+}
+
+.tdCompute {
+  vertical-align: top;
+  text-align:left;
+  background:#99CCCC;
+  color:blue;
+  padding: 0px 5px 0px 5px;
+}
+
+.tdInfo {
+  vertical-align: top;
+  text-align:left;
+  background:bisque;
+  color:blue;
+  width: 100px;
+}
+
+
+input[type=text] {
+  padding: 2px 5px 2px 5px;
+  margin: 2px 2px 2px 2px;
+  border: 0px solid red;
+  border-radius: 4px;
+  font-size: 0.8em;
+}
+
+input[readonly] { 
+    background: #FFCCCC; 
+    color: #333; 
+}
+
+select {
+    border:1px solid red; /*marche pas*/
+    background:#FFCCCC;
+}
+.divDrives{
+    width:250px;
+    border 0px solid red;
+    background:#DFDFDF;
+}
+
+.btnAction{
+  width: 170px;
+  height: 44px;
+}
+
+.parameters {
+  background:#E2E2E2;
+}
+
+#frmLog{
+    width:640px;
+    padding:2px;
+    margin: 0px 5px 0px 0px
+}
+
+#lstDrives{
+    width:60px;
+    padding-left:2px;
+}

@@ -1,0 +1,53 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.CompileOnBackground=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+Compilator.LogEncoding=0
+DefaultDir=D:\_JJD-WorkSpace-D\Connexions_Dossiers\WakeUp_Dock\Projet\WakeUp_Dock-v004
+DefaultCP=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+HTServer=localhost
+Extensions=*.*
+[Project tree]
+_WakeUp_Dock
+	+WakeUp_Dock-v004
+		_WakeUp_Dock.ppr
+		config.ini
+		english.ini
+		french.ini
+		funotheque.vbs
+		german.ini
+		sleep.vbs
+		wakeUp.css
+		WakeUp_Dock-v004.hta
+[Open project files]
+0=WakeUp_Dock-v004.hta
+1=wakeUp.js
+2=funotheque.vbs
+3=config.ini
+4=config - Copie.ini
+[Selected Project Files]
+Main=
+Selected=WakeUp_Dock-v004.hta
+[WakeUp_Dock-v004.hta]
+TopLine=214
+Caret=21,228
+[wakeUp.js]
+TopLine=1
+Caret=1,26
+[funotheque.vbs]
+TopLine=1
+Caret=6,19
+[config.ini]
+TopLine=1
+Caret=16,7
+[config - Copie.ini]
+TopLine=1
+Caret=1,1

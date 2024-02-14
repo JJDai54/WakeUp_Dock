@@ -6,7 +6,7 @@
 <HTA:APPLICATION
   APPLICATIONNAME="WakeUp Dock"
   ID="WakeUpDockHTA"
-  VERSION="3.0 du 10/02/2024 [Auteur : <JJ Delalandre>jjdelalandre@orange.fr]"
+  VERSION="4.0 du 14/02/2024 [Auteur : <JJ Delalandre>jjdelalandre@gmail.com]"
   SCROLL="no"
   CLOSE="no"
   RESIZE="no"
@@ -18,8 +18,8 @@
 
 </style>
 
-    <link rel="stylesheet" type="text/css" href="wakeUp.css">
-    <script src="wakeUp.js"></script>
+    <link rel="stylesheet" type="text/css" href="include/wakeUp.css">
+    <script src="include/wakeUp.js"></script>
 </head>
 
 <script language="javaScript">
@@ -51,7 +51,7 @@ dim tsLog
 '
 '----------------------------------------------
 sub Window_OnLoad
-    window.resizeTo 800, 450
+    window.resizeTo 800, 470
 	document.title = document.title & ",  Version " &   WakeUpDockHTA.Version
     set fnc = load_class ("funotheque")
  
@@ -69,6 +69,7 @@ sub Window_OnLoad
     frmTemporisation.value = mobidic("tempo")
     frmEssais.value = mobidic("essais")
     frmFileName.value  = mobidic("fileName")
+    frmChkLog.checked  = (mobidic("saveLog") = 1)
 
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmBeginDate) 
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmEndDate) 
@@ -165,7 +166,7 @@ end sub
 '
 '----------------------------------------------
 function load_class(className)
-Dim classFile : classFile = className & ".vbs"
+Dim classFile : classFile = "include\" & className & ".vbs"
 Dim vbsFile : Set vbsFile = fsO.OpenTextFile(classFile, 1, False)
 Dim myFunctionsStr : myFunctionsStr = vbsFile.ReadAll
 dim cls
@@ -199,6 +200,7 @@ function update_interface_language ()
     msg_libCounter.innerHTML = dico("msg_libCounter")
     msg_libLog.innerHTML = dico("msg_libLog")
     msg_libNbEssai.innerHTML = dico("msg_libNbEssai")
+    msg_libChkLog.innerHTML = dico("msg_libChkLog")
     
     msg_LecteurToWakeUp.innerHTML = dico("msg_lecteurToWakeUp")
     msg_duree.innerHTML = dico("msg_duree")
@@ -209,6 +211,8 @@ function update_interface_language ()
     msg_nbWakeUp.innerHTML = dico("msg_nbWakeUp")
     msg_langInterface.innerHTML = dico("msg_langInterface")
     msg_Essais.innerHTML = dico("msg_Essais")
+    msg_log.innerHTML = dico("msg_log")
+    msg_chkLog.innerHTML = dico("msg_chkLog")
 
 End function
 '----------------------------------------------
@@ -313,7 +317,7 @@ end function
 sub beginLog () 
 dim sBeginLog
 
-    set tsLog = createFile("WakeUp_Dock.log")
+    set tsLog = createFile("log\WakeUp_Dock.log")
     sBeginLog = "Drive : {drive} - Tempo : {tempo} - fichier : {fileName} - language : {language} - esssai : {essais}"
     sBeginLog = replace(sBeginLog, "{drive}", mobidic("drive"))
     sBeginLog = replace(sBeginLog, "{tempo}", mobidic("tempo"))
@@ -398,7 +402,7 @@ dim h , nbEssai
           newFile.Close
 
 
-        fnc.sleep mobidic("tempo")
+        sleep mobidic("tempo")
 
         if not isRuning(0) then
             set_log dico("msg_stopProcess")
@@ -448,7 +452,7 @@ dim h, newFile, bolOk, msg
                 set createFile = nothing
                 exit function
             end if
-            fnc.sleep 5
+            sleep 5
         end if
         
     loop
@@ -491,6 +495,16 @@ dim r , sFile, tsIsRunning
     isRuning = r
 end function
 
+'----------------------------------------------
+'
+'----------------------------------------------
+sub sleep (nbSecondes) 
+dim sFilePath 
+
+  sFilePath =  "include\sleep.vbs"
+  oShell.Run sFilePath & " " & nbSecondes, 1, True
+
+end sub
 
 
 '==============================================================
@@ -535,6 +549,16 @@ end function
           <td class="tdCaption" id="msg_libFile">Fichier</td>
           <td class="tdValue"><input maxlength="30" size="30" name="frmFileName" class="parameters" value="$_wakeUp_[counter].txt"></td>
           <td class="tdDescription" id="msg_fileName">Nom du fichier à créer temporairement pour réveiller le Dock</td>
+        </tr>
+        <tr>
+          <td class="tdCaption" id="msg_libChkLog"></td>
+          <td class="tdValue">
+            <div>
+                <input type="checkbox" name="frmChkLog" id="frmChkLog" checked />
+                <label name="msg_chkLog" id="msg_chkLog" for="frmChkLog">Générer un log</label>
+            </div>
+          </td>
+          <td class="tdDescription" id="msg_log">Généraion d'un log</td>
         </tr>
         <tr>
           <td class="" colspan="3"><hr></td>

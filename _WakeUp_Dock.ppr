@@ -13,41 +13,44 @@ DontOpen=0
 AbsolutePath=0
 FileFormat=0
 ProjectFilesOnly=0
-HTServer=localhost
 Extensions=*.*
 [Project tree]
 _WakeUp_Dock
 	+WakeUp_Dock-v004
+		-docs
+			docs\~$elp_fr.docx
+			docs\help_fr.docx
+		+include
+			include\funotheque.vbs
+			include\sleep.vbs
+			include\wakeUp.css
+			include\wakeUp.js
+		+language
+			language\english.ini
+			language\french.ini
+			language\german.ini
+		-log
+			log\WakeUp_Dock.log
 		_WakeUp_Dock.ppr
 		config.ini
-		english.ini
-		french.ini
-		funotheque.vbs
-		german.ini
-		sleep.vbs
-		wakeUp.css
 		WakeUp_Dock-v004.hta
 [Open project files]
 0=WakeUp_Dock-v004.hta
-1=wakeUp.js
-2=funotheque.vbs
+1=include\funotheque.vbs
+2=language\french.ini
 3=config.ini
-4=config - Copie.ini
 [Selected Project Files]
 Main=
 Selected=WakeUp_Dock-v004.hta
 [WakeUp_Dock-v004.hta]
-TopLine=214
-Caret=21,228
-[wakeUp.js]
+TopLine=42
+Caret=28,54
+[include\funotheque.vbs]
 TopLine=1
 Caret=1,26
-[funotheque.vbs]
-TopLine=1
-Caret=6,19
+[language\french.ini]
+TopLine=6
+Caret=11,16
 [config.ini]
 TopLine=1
-Caret=16,7
-[config - Copie.ini]
-TopLine=1
-Caret=1,1
+Caret=8,7

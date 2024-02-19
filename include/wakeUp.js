@@ -3,6 +3,7 @@
  * ***/
 function jsLoadLecteurs(lecteurs, letterDefault){
     var obList = document.getElementById("lstDrives");
+    obList.innerHTML = ""
     for (var h=0; h<lecteurs.length; h++){
         var letter = lecteurs.substr(h, 1);
         var newOption = new Option(letter, letter);

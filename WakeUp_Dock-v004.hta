@@ -131,6 +131,12 @@ end sub
 '----------------------------------------------
 '
 '----------------------------------------------
+sub event_updateDrives()
+    call fill_listDrives(mobidic("drive"))
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
 sub event_runTemporisation()
     runTemporisation()
 end sub
@@ -189,7 +195,8 @@ function update_interface_language ()
     cmdStop.innerHTML = dico("msg_kilTempo")
     cmdSaveConfig.innerHTML = dico("msg_SaveConfig")
     cmdQuit.innerHTML = dico("msg_closeWindow")
-    
+    cmdUpdateDrives.innerHTML = dico("msg_refreshDrives") 
+     
     msg_libLecteur.innerHTML = dico("msg_libLecteur")
     msg_libLanguage.innerHTML = dico("msg_libLanguage")
     msg_libTempo.innerHTML = dico("msg_libTempo")
@@ -344,6 +351,10 @@ sub initTemporisation( )
     update_buttons(0)
     beginTime = Now()
     Duree = 0
+
+    call set_message(FormatDateTime(Now, vbGeneralDate), frmBeginDate) 
+    call set_message(FormatDateTime(Now, vbGeneralDate), frmEndDate) 
+    
 end sub
 
 '----------------------------------------------
@@ -524,7 +535,11 @@ end sub
         </tr>
         <tr>
           <td class="tdCaption" id="msg_libLecteur">Lecteur</td>
-          <td class="tdValue"><select name="lstDrives" id="lstDrives"></select></td>
+          <td class="tdValue">
+                <select name="lstDrives" id="lstDrives"></select>
+                &nbsp;&nbsp;&nbsp;
+                <button style="width: 50;height: 20px;" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
+            </td>
           <td class="tdDescription" id="msg_LecteurToWakeUp">Lettre du lecteur à réveiller</td>
         </tr>
        <tr>

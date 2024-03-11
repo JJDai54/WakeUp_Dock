@@ -25,3 +25,20 @@ function jsLoadList(id, items, vDefault){
         if (vDefault.length > 0) obList.value=vDefault;    
 }
 
+function getDrivesChecked(){
+var lstDrives = ""
+    var divDrives = document.getElementById("divDrives");
+    var obDrives = divDrives.children;
+    //alert (divDrives.name + "-" + obDrives.length);
+    for (var h=0; h<obDrives.length; h++){
+        var child = obDrives[h];
+        //alert(child.tagName );
+        if (child.tagName == "INPUT" && child.checked){
+        //alert(child.tagName + "-" +  child.checked);
+            lstDrives += child.value;
+        }
+    }
+    return (lstDrives);
+}
+
+

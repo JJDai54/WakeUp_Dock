@@ -3,7 +3,9 @@ body {
 	color: darkblue;
 	font-family: Calibri;
 	font-size: 11pt;
-	margin: 12px;
+	margin: 0px;
+	
+
 }
 table{
   text-align: left; 
@@ -11,7 +13,8 @@ table{
   border:0;
   cellpadding:0;
   cellspacing:0;
-  width:90%;
+  width:100%;
+	padding: 12px;
 }
 
 tr td{
@@ -79,9 +82,20 @@ select {
     background:#DFDFDF;
 }
 
+.btnActionRefresh{
+    width: 50;
+    height: 20px;
+    cursor:pointer;
+}
+.btnActionInp{
+    width: 25px; 
+    height: 20px;
+     cursor:pointer;
+}
 .btnAction{
   width: 170px;
   height: 44px;
+    cursor:pointer;
 }
 
 .parameters {
@@ -97,4 +111,7 @@ select {
 #lstDrives{
     width:60px;
     padding-left:2px;
+}
+img {
+    cursor:pointer;
 }

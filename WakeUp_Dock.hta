@@ -50,8 +50,15 @@ dim tsLog
 '----------------------------------------------
 '
 '----------------------------------------------
+sub openURL (url) 
+msgbox "ok"
+oShell.run url
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
 sub Window_OnLoad
-    window.resizeTo 800, 470
+    window.resizeTo 800, 530
 	document.title = document.title & ",  Version " &   WakeUpDockHTA.Version
     set fnc = load_class ("funotheque")
  
@@ -94,6 +101,12 @@ sub event_updateLanguage()
         
     update_interface_language () 
 
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub eventOpenURL (url) 
+    oShell.run url
 end sub
 
 
@@ -253,12 +266,14 @@ dim bolok
       cmdSaveConfig.disabled = true
       lstDrives.disabled=true
       frmFileName.disabled=true
+      frmChkLog.disabled = true
       
     case 2: '*** stop
       cmdRun.disabled = true    
       cmdStop.disabled = true
       cmdQuit.disabled = true 
       cmdSaveConfig.disabled = true
+      frmChkLog.disabled = true
       
     case else: '*** en attente
       cmdRun.disabled = false    
@@ -267,6 +282,7 @@ dim bolok
       lstDrives.disabled=false
       frmFileName.disabled=false
       cmdSaveConfig.disabled = false
+      frmChkLog.disabled = false
     
     end select
 
@@ -538,7 +554,7 @@ end sub
           <td class="tdValue">
                 <select name="lstDrives" id="lstDrives"></select>
                 &nbsp;&nbsp;&nbsp;
-                <button style="width: 50;height: 20px;" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
+                <button class="btnActionRefresh" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
             </td>
           <td class="tdDescription" id="msg_LecteurToWakeUp">Lettre du lecteur à réveiller</td>
         </tr>
@@ -547,7 +563,7 @@ end sub
           <td class="tdValue">
             <input maxlength="5" size="5" name="frmTemporisation"  id="frmTemporisation" class="parameters" value="60" readonly style="color:black;">
             &nbsp;&nbsp;&nbsp;
-            <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateTempo" onclick="event_updateTempo()">...</button>
+            <button class="btnActionInp" type="button" name="cmdUpdateTempo" value="cmdUpdateTempo" onclick="event_updateTempo()">...</button>
           </td>
           <td sclass="tdDescription" id="msg_duree">Durée en secondes de la termporisation</td>
         </tr>
@@ -556,7 +572,7 @@ end sub
           <td class="tdValue">
             <input maxlength="5" size="5" name="frmEssais"  id="frmEssais" class="parameters" value="60" readonly style="color:black;">
             &nbsp;&nbsp;&nbsp;
-            <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateEssais" onclick="event_updateEssais()">...</button>
+            <button class="btnActionInp" type="button" name="cmdUpdateTempo" value="cmdUpdateEssais" onclick="event_updateEssais()">...</button>
           </td>
           <td sclass="tdDescription" id="msg_Essais">Nb essais</td>
         </tr>
@@ -602,10 +618,16 @@ end sub
           <td class="tdCaption" id="msg_libLog">Log</td>
           <td  class="tdInfo" colspan="2"><div name="frmLog" id="frmLog"></div></td>
         </tr>
+        <tr><td colspan="3"><hr></td></tr>
+        <tr>
+          <td class="tdCaption" id="msg_libDon"></td>
+          <td><center><img src="images/PayPal-donate-01.png" height="32px" alt="" title="" onclick="eventOpenURL('https://www.paypal.com/donate?hosted_button_id=H9EMH5M4XA48A')"></center></td>
+          <td><center><img src="images/github-02.png" height="32px" alt="" title="" onclick="eventOpenURL('https://github.com/JJDai54/WakeUp_Dock')"></center></td>
+        </tr>
       </tbody>
-    </table>
+    <tr><td colspan="3">
     <br>
-    <div style="margin:0px;width:90%;height:44px;padding:0px;text-align:center;">
+    <div style="margin:0px 0px 12px 0px;width:90%;height:44px;padding:0px;text-align:center;">
       <button class="btnAction" type="button" name="cmdRun"  value="cmdRun" onclick="event_runTemporisation()">Lancer la temporisation</button>
       <button class="btnAction" type="button" name="cmdStop" value="cmdStop" onclick="event_stopTemporisation()">Stoper la temporisation</button>
       <button class="btnAction" type="button" name="cmdSaveConfig" value="cmdSaveConfig" onclick="event_saveConfig()">Sauver la config</button>
@@ -613,7 +635,10 @@ end sub
       <br>
 
     </div>
+    </td>
+    </tr>
   </div>
+    </table>
 </body>
 
 </html>

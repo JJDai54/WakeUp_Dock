@@ -1,4 +1,6 @@
 Dim oShell: Set oShell = CreateObject("WScript.Shell")
+'wscript.scriptFullName,64,"Chemin Absolu du script en cours"
+'MsgBox wscript.scriptname,64,"Nom du script en cours"
 
 class Funotheque
 
@@ -29,6 +31,9 @@ end sub
 function load_iniFile (sFilePath) 
 dim tsConfig, line, row, t, mobidic
 dim name, value
+
+'''oShell.scriptFullName,64,"Chemin Absolu du script en cours"
+
 'dim fso:    Set fso = CreateObject("Scripting.FileSystemObject" )
   'sFilePath =  "config.ini"
   Set tsConfig = fso.OpenTextFile (sFilePath, 1) 

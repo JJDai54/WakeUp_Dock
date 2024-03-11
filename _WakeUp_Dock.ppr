@@ -52,8 +52,8 @@ Selected=WakeUp_Dock.hta
 TopLine=37
 Caret=26,70
 [WakeUp_Dock.hta]
-TopLine=84
-Caret=15,108
+TopLine=74
+Caret=176,627
 [include\funotheque.vbs]
 TopLine=1
 Caret=1,28

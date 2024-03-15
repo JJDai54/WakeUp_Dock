@@ -43,18 +43,19 @@ _WakeUp_Dock
 6=language\french.ini
 7=..\..\..\..\..\zzz\Nouveau1.hta
 8=include\sleep.vbs
+9=..\..\copy to github.bat
 [Selected Project Files]
 Main=
-Selected=WakeUp_Dock.hta
+Selected=..\..\copy to github.bat
 [WakeUp_Dock.hta]
-TopLine=1
-Caret=21,9
+TopLine=810
+Caret=1,817
 [include\funotheque.vbs]
 TopLine=1
 Caret=3,28
 [config.ini]
 TopLine=1
-Caret=12,1
+Caret=14,9
 [language\english.ini]
 TopLine=1
 Caret=5,3
@@ -73,3 +74,6 @@ Caret=1,4
 [include\sleep.vbs]
 TopLine=1
 Caret=19,15
+[..\..\copy to github.bat]
+TopLine=1
+Caret=25,6

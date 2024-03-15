@@ -63,6 +63,7 @@ sub Window_OnLoad
     'load_config
     set mobidic = fnc.load_iniFile("config.ini")
     set dico = fnc.load_iniFile("language\" & mobidic("language") & ".ini")
+call set_log ("Window_OnLoad", "begin")
 
     update_interface_language
     call fill_ListLanguage(mobidic("language"))	
@@ -87,7 +88,7 @@ sub Window_OnLoad
 
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmBeginDate) 
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmEndDate) 
- 
+    if mobidic("delLogOnStart") = 1 then clearLog()
 '''getPosObj("cmdRun")   
 '''msgbox   cmdRun.id
 end sub
@@ -97,6 +98,7 @@ end sub
 '
 '----------------------------------------------
 sub Window_onUnload()
+call set_log ("Window_onUnload", "begin")
     call isRuning (2, "")
     call set_log ("Window_onUnload", mobidic("msg_quit"))
 end sub
@@ -104,6 +106,7 @@ end sub
 '
 '----------------------------------------------
 sub event_updateLanguage()
+call set_log ("event_updateLanguage", "begin")
 
     mobidic("language") = lstLanguage.value
     set dico = fnc.load_iniFile("language\" & mobidic("language") & ".ini")
@@ -115,12 +118,14 @@ end sub
 '
 '----------------------------------------------
 sub event_openURL (url) 
+call set_log ("event_openURL", "begin")
     oShell.run url
 end sub
 '----------------------------------------------
 '
 '----------------------------------------------
 sub event_openHelp () 
+call set_log ("event_openHelp", "begin")
     if mobidic("language") = "french" then
         event_openURL "https://github.com/JJDai54/WakeUp_Dock/blob/main/docs/help_fr.pdf"
     else
@@ -132,6 +137,7 @@ end sub
 '
 '----------------------------------------------
 sub event_updateFrmInput(sName)
+call set_log ("event_updateFrmInput", "begin")
 dim newValue
 dim obName, obFrm
     sName = lCase(sName)
@@ -152,6 +158,7 @@ end sub
 '
 '----------------------------------------------
 sub event_updateDrives()
+call set_log ("event_updateDrives", "begin")
 dim activDrives, driveDefault
 
     activDrives = fnc.get_activeDrives()
@@ -175,6 +182,7 @@ end sub
 '
 '----------------------------------------------
 sub event_runTemporisation()
+call set_log ("event_runTemporisation", "begin")
 dim lstDrives 
   
   call set_log ("multiDrives", mobidic("multiDrives"))  
@@ -195,6 +203,7 @@ end sub
 '
 '----------------------------------------------
 sub event_stopTemporisation( )
+call set_log ("event_stopTemporisation", "begin")
 dim r
     call set_log ("event_stopTemporisation", dico("msg_stopTempo"))
     call isRuning (2,"")
@@ -206,6 +215,7 @@ end sub
 '
 '----------------------------------------------
 sub event_saveConfig()
+call set_log ("event_saveConfig", "begin")
     call fnc.save_iniFile (mobidic, "config.ini", false, 16)
 end sub
 
@@ -213,6 +223,7 @@ end sub
 '
 '----------------------------------------------
 sub event_closeTemporisation()
+call set_log ("event_closeTemporisation", "begin")
     ''msgbox("On ferme")
 	On Error Resume Next
 	window.close()
@@ -241,6 +252,7 @@ end function
 '
 '----------------------------------------------
 function update_interface_language () 
+call set_log ("update_interface_language", "begin")
   
     cmdRun.innerHTML = dico("msg_executeTempo")
     cmdStop.innerHTML = dico("msg_kilTempo")
@@ -277,6 +289,7 @@ End function
 '
 '----------------------------------------------
 function update_timer()
+call set_log ("update_timer", "begin")
 dim secondes, minutes, heures
 
     endTime = Now()
@@ -294,6 +307,7 @@ end function
 '
 '----------------------------------------------
 function update_buttons(action)
+call set_log ("update_buttons", "begin")
 
     select case (action)
     case 1 : '*** execution
@@ -333,6 +347,7 @@ end function
 '
 '----------------------------------------------
 function fill_listDrives(activDrives, driveDefault)
+call set_log ("fill_listDrives", "begin")
 
     call jsLoadLecteurs(activDrives, driveDefault)
     ''fill_listDrives = activDrives
@@ -343,6 +358,7 @@ end function
 '
 '----------------------------------------------
 function fill_chkDrives(activDrives, driveDefault)
+call set_log ("fill_chkDrives", "begin")
 dim h, lettre, isChecked
 dim lecteurs, html, balise
 dim sep
@@ -376,6 +392,7 @@ End function
 '
 '----------------------------------------------
 function fill_ListLanguage(languageDefault)
+call set_log ("fill_ListLanguage", "begin")
 dim languages
 
     languages = fnc.get_files("language", "ini", true)
@@ -404,6 +421,7 @@ dim sFileLog
 
     call set_message(fncName & "-" & sMessage, frmLog)
     if (mobidic("saveLog") <> 1) then exit function
+    '-------------------------------------------------------'
     if tsLogTimeStamp = "" then 
         tsLogTimeStamp =  replace(replace(FormatDateTime(now, 0),"/" , "-"),":","-") 'vbGeneralDate = 0'
    
@@ -445,6 +463,7 @@ end function
 '
 '----------------------------------------------
 sub initTemporisation( )
+call set_log ("initTemporisation", "begin")
 
     call clearLog()
     
@@ -466,6 +485,7 @@ end sub
 '
 '----------------------------------------------
 sub runTemporisation_multi(lstDrives)
+call set_log ("runTemporisation_multi", "begin")
 dim drive
 dim h
 dim drivesErr : drivesErr = ""
@@ -525,6 +545,7 @@ end sub
 '
 '----------------------------------------------
 sub runTemporisation_ok(lstDrives)
+call set_log ("runTemporisation_ok", "begin")
 dim fichierTXT : fichierTXT = ""
 dim h : h = 0
 dim k : k = 0
@@ -581,6 +602,7 @@ end sub
 '
 '----------------------------------------------
 sub clearAllTempFile(lstDrives)
+call set_log ("clearAllTempFile", "begin")
 '''dim lstDrives : lstDrives = mobidic("drives")
 dim h 
     for h = 1 to len(lstDrives)
@@ -592,6 +614,7 @@ end sub
 '
 '----------------------------------------------
 sub clearTempFile(drive)
+call set_log ("clearTempFile", "begin")
 dim sFile
 dim fld, f 
 dim lgRootName : lgRootName = len(mobidic("fileName")) 
@@ -630,19 +653,15 @@ end sub
 '
 '----------------------------------------------
 sub runTemporisation_one(drive)
+call set_log ("runTemporisation_one", "begin")
 dim newFileTempo
 dim h , nbEssai, bolOk
     currentDrive = drive
     
-    if (mobidic("saveLog")) then beginLog()
-''' msgbox "runTemporisation_one ===>1"
     initTemporisation()
     
     fichierTXT=""
     update_buttons(1)
-'''if  drive="" then drive="N"
-     ' creation du fichier isRuning      
-''' msgbox "runTemporisation_one ===>2"
     if not isRuning(cstCreateFile, drive) then
         update_buttons(0)
         exit sub
@@ -651,7 +670,6 @@ dim h , nbEssai, bolOk
 
     call set_log ("runTemporisation_one", dico("msg_runTempo"))
 
-'''msgbox "runTemporisation_one ===>3"
     h = 0
     do while  gBolOk
         
@@ -665,14 +683,11 @@ dim h , nbEssai, bolOk
         
         h = h + 1
         call set_message(h, frmCounter)
-        'fichierTXT =  drive  & ":\" & replace(mobidic("fileName"),"[counter]",h) 
         fichierTXT =  drive  & ":\" & mobidic("fileName") & "_" & h & ".txt" 
-''''        msgbox "runTemporisation_one ===>" & fichierTXT
 
         '*** Création du fichier de temporisation
         on error resume next
         call set_log ("runTemporisation_one", dico("msg_createFile") & fichierTXT)
- '''msgbox fichierTXT
         '---------------------------------------------
         bolOk = createFile(fichierTXT, dico("msg_data1"))
         if not bolOk then
@@ -697,7 +712,6 @@ dim h , nbEssai, bolOk
     isRunning cstDeleteFile 
     
     update_timer()
-    '''update_buttons(0)
     call set_log ("runTemporisation_one", dico("msg_endTempo"))
 
 end sub
@@ -706,6 +720,7 @@ end sub
 '
 '----------------------------------------------
 function createFile(sFile, sMessage)
+call set_log ("createFile", "begin")
 dim h : h = 0
 dim j : j = 0
 dim newFile2Open, msg
@@ -713,30 +728,24 @@ dim bolOk : bolOk = false
     
  
     on error resume next
-j=j+1: call set_log ("createFile", "createFile-" &  j)   
     '-----------------------------------------------'
     do while true
         h = h + 1
-j=j+1: call set_log ("createFile", j)   
         msg = replace(dico("msg_testReadDrive"), "{drive}", sFile)
         msg = replace(msg, "{tentatives}", h)
         msg = replace(msg, "{essais}", mobidic("essais"))
         call set_log ("createFile", msg)
-j=j+1: call set_log ("createFile", j)   
         
         err.clear
         Set newFile2Open = fso.CreateTextFile(sFile, TRUE)
-j=j+1: call set_log ("createFile", j & "===>" & sFile)   
         
         if newFile2Open is nothing then
-j=j+1: call set_log ("createFile", j & "===>" & sFile)   
             call set_log ("createFile", "Echec " & h & " de la creationn du fichier : " & sFile)
             if h > cInt(mobidic("essais")) then
                 call set_log ("createFile", "Impossible de creer le fichier : " & sFile)
                 exit do
             end if
         else
-j=j+1: call set_log ("createFile zz", j & "===>" & sFile)   
             call newFile2Open.WriteLine(sMessage)
             call newFile2Open.close()
             bolOk = true
@@ -755,6 +764,7 @@ end function
 '
 '----------------------------------------------
 function isRuning(action, drive)
+call set_log ("isRuning", "begin")
 dim r , sFile, tsIsRunning
     
     if drive = "" then
@@ -794,6 +804,7 @@ end function
 '
 '----------------------------------------------
 function sleep (nbSecondes) 
+call set_log ("sleep", "begin")
 dim sFilePath 
 dim numErr : numErr = 0
 

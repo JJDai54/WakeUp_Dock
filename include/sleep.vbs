@@ -12,5 +12,6 @@ public zzz
     WScript.Sleep(tempo * 1000)  
    ''' msgbox ("fin tempo - " & tempo) 
     
-    WScript.Quit
+    WScript.Quit 0 '%ERRORLEVEL%'
+ 
 

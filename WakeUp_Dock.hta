@@ -1,22 +1,26 @@
 <!DOCTYPE HTML>
 <html><head>
-  
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
   <title>Temporisation WakeUp DD</title>
 <HTA:APPLICATION
   APPLICATIONNAME="WakeUp Dock"
   ID="WakeUpDockHTA"
-  VERSION="4.2 du 10/03/2024 [Auteur : <JJ Delalandre>jjdelalandre@gmail.com]"
+  SINGLEINSTANCE="no"
+  VERSION="4.6 du 12/03/2024 [Auteur : <JJ Delalandre>jjdelalandre@gmail.com]"
+  ICON="favicone_cocotte_blue.png"
   SCROLL="no"
   CLOSE="no"
   RESIZE="no"
   CLOSEBUTTON="no"
   BORDER="thin"
-  BORDERSTYLE="sunken"/>
-
-<style type="text/css">
-
-</style>
+  BORDERSTYLE="sunken"
+  SHOWINTASKBAR="Yes"
+  WINDOWSTATE="Normal"
+  CONTEXTMENU="no" 
+  MAXIMIZEBUTTON="No" 
+  MINIMIZEBUTTON="Yes" 
+  NAVIGABLE="no"
+  BORDERSTYLE="craised" />
 
     <link rel="stylesheet" type="text/css" href="include/wakeUp.css">
     <script src="include/wakeUp.js"></script>
@@ -38,20 +42,21 @@ const cstDeleteFile = 2
 
 dim fnc
 dim mobidic, dico
-dim bolok, fileName, isRunning
+dim gBolOk, fileName, isRunning
 dim beginTime, endTime, Duree 
 dim fichierTXT
 
 'Dim oShell: Set oShell = CreateObject("WScript.Shell")
 dim fso:    Set fso = CreateObject("Scripting.FileSystemObject" )
-dim tsLog
+dim tsLogTimeStamp :  tsLogTimeStamp = ""
+dim currentDrive
 
 '================== EVENTS ============================================
 '----------------------------------------------
 '
 '----------------------------------------------
 sub Window_OnLoad
-    window.resizeTo 800, 530
+    window.resizeTo 800, 550
 	document.title = document.title & ",  Version " &   WakeUpDockHTA.Version
     set fnc = load_class ("funotheque")
  
@@ -62,11 +67,20 @@ sub Window_OnLoad
     update_interface_language
     call fill_ListLanguage(mobidic("language"))	
     'lstLanguage.value=mobidic("language")
-    call fill_listDrives(mobidic("drive"))    
+    if mobidic("multiDrives") = 1 then
+        trChkDrives.style.display = ""
+        trLstDrives.style.display = "none"
+    else
+        trChkDrives.style.display = "none"
+        trLstDrives.style.display = ""
     
-    update_buttons(0)
+    end if
     
-    frmTemporisation.value = mobidic("tempo")
+    call event_updateDrives()
+    
+    update_buttons 0
+    
+    frmTempo.value = mobidic("tempo")
     frmEssais.value = mobidic("essais")
     frmFileName.value  = mobidic("fileName")
     frmChkLog.checked  = (mobidic("saveLog") = 1)
@@ -74,15 +88,17 @@ sub Window_OnLoad
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmBeginDate) 
     'call set_message(FormatDateTime(Now, vbGeneralDate), frmEndDate) 
  
-   
-    
+'''getPosObj("cmdRun")   
+'''msgbox   cmdRun.id
 end sub
+
+
 '----------------------------------------------
 '
 '----------------------------------------------
 sub Window_onUnload()
-    isRuning (2)
-    set_log mobidic("msg_quit")
+    call isRuning (2, "")
+    call set_log ("Window_onUnload", mobidic("msg_quit"))
 end sub
 '----------------------------------------------
 '
@@ -112,34 +128,22 @@ sub event_openHelp ()
     end if
 end sub
 
-
 '----------------------------------------------
 '
 '----------------------------------------------
-sub event_updateTempo()
-dim newTempo
-  
-    on error resume next
-    newtempo = cInt(trim (inputBox("Entrez la nouvelle temporisation", WakeUpDockHTA.ApplicationName, mobidic("tempo"))))
-    if error.number = 0 then
-      if newTempo <> frmTemporisation.value AND newTempo <> 0 AND IsNumeric(newTempo) then 
-          frmTemporisation.value = newTempo
-          mobidic("tempo") = frmTemporisation.value
-       end if  
-     end if
-end sub
-'----------------------------------------------
-'
-'----------------------------------------------
-sub event_updateEssais()
+sub event_updateFrmInput(sName)
 dim newValue
-  
+dim obName, obFrm
+    sName = lCase(sName)
+    obName = "frm" & ucase(left(sName,1)) & mid(sName,2)
+    set obFrm = document.getElementById(obName)    
+   
     on error resume next
-    newValue = cInt(trim (inputBox("Entrez le noveau nombre d'essais", WakeUpDockHTA.ApplicationName, mobidic("tempo"))))
+    newValue = cInt(trim (inputBox("Entrez la nouvelle valeur", WakeUpDockHTA.ApplicationName, mobidic(sName))))
     if error.number = 0 then
-      if newValue <> frmEssais.value AND newValue <> 0 AND IsNumeric(newValue) then 
-          frmEssais.value = newValue
-          mobidic("essais") = frmEssais.value
+      if newValue <> obFrm.value AND newValue <> 0 AND IsNumeric(newValue) then 
+          obFrm.value = newValue
+          mobidic(newValue) = obFrm.value
        end if  
      end if
 end sub
@@ -148,30 +152,61 @@ end sub
 '
 '----------------------------------------------
 sub event_updateDrives()
-    call fill_listDrives(mobidic("drive"))
+dim activDrives, driveDefault
+
+    activDrives = fnc.get_activeDrives()
+    driveDefault = mobidic("drivesDefault") 
+
+
+    ''' pour les tests
+    if mobidic("testDrives") <> "" then
+        activDrives = activDrives & mobidic("testDrives") 
+        driveDefault = driveDefault & mobidic("testDrives") 
+    end if
+    
+    if mobidic("multiDrives") = 1 then
+        call fill_chkDrives(activDrives, driveDefault)
+    else
+        call fill_listDrives(activDrives, driveDefault)
+    end if
+
 end sub
 '----------------------------------------------
 '
 '----------------------------------------------
 sub event_runTemporisation()
-    runTemporisation()
+dim lstDrives 
+  
+  call set_log ("multiDrives", mobidic("multiDrives"))  
+  if mobidic("multiDrives") = 1 then
+    lstDrives = getDrivesChecked()
+   
+    if len(lstDrives) = 1 then
+        runTemporisation_one(lstDrives)
+    else
+        runTemporisation_multi(lstDrives)
+    end if
+  else
+    runTemporisation_one(mobidic("drive"))
+  end if
+  
 end sub
 '----------------------------------------------
 '
 '----------------------------------------------
 sub event_stopTemporisation( )
 dim r
-    set_log dico("msg_stopTempo")
-    isRuning (2)
-    bolok = false
-    update_buttons(2)
+    call set_log ("event_stopTemporisation", dico("msg_stopTempo"))
+    call isRuning (2,"")
+    gBolOk = false
+    update_buttons 2
      
 end sub
 '----------------------------------------------
 '
 '----------------------------------------------
 sub event_saveConfig()
-    call fnc.save_iniFile (mobidic, "config.ini", false, 12)
+    call fnc.save_iniFile (mobidic, "config.ini", false, 16)
 end sub
 
 '----------------------------------------------
@@ -259,7 +294,6 @@ end function
 '
 '----------------------------------------------
 function update_buttons(action)
-dim bolok
 
     select case (action)
     case 1 : '*** execution
@@ -290,22 +324,53 @@ dim bolok
     end select
 
     
-    update_buttons   = true  
- ''   set_log dico("msg_stopTempo") & "(" & mobidic("tempo") & " secondes)" 
+    update_buttons = true  
+ ''   call set_log ("update_buttons", dico("msg_stopTempo") & "(" & mobidic("tempo") & " secondes)") 
 end function
 
 
 '----------------------------------------------
 '
 '----------------------------------------------
-function fill_listDrives(driveDefault)
-dim drives
-    
-    drives = fnc.get_activeDrives()
-    call jsLoadLecteurs(drives, driveDefault)
-    fill_listDrives = drives
+function fill_listDrives(activDrives, driveDefault)
+
+    call jsLoadLecteurs(activDrives, driveDefault)
+    ''fill_listDrives = activDrives
 
 end function
+
+'----------------------------------------------
+'
+'----------------------------------------------
+function fill_chkDrives(activDrives, driveDefault)
+dim h, lettre, isChecked
+dim lecteurs, html, balise
+dim sep
+
+    html = ""
+    sep = " - "
+    
+    for h=1 to len(activDrives)    
+        lettre = mid(activDrives, h, 1)
+        isChecked = ""
+        if (instr(driveDefault, lettre) > 0) then isChecked = "checked"
+
+        balise = sep & "<input type='checkbox' id='{id}' name='{name}' value='{value}' {checked} />" 
+        balise = balise & "<label for='{value}'>{libelle}</label>"
+        balise = replace(balise, "{id}", "drive-" & lettre)
+        balise = replace(balise, "{name}", "drive-" & lettre)
+        balise = replace(balise, "{value}", lettre)
+        balise = replace(balise, "{checked}", isChecked)
+        balise = replace(balise, "{libelle}", lettre)
+
+        html = html & balise
+    next
+    
+        html = html & "<button class='btnActionRefresh' type='button' name='cmdUpdateDrives' value='cmdUpdateDrives' title='Refresh' onclick='event_updateDrives()'>...</button>"
+    'alert(html)
+    divDrives.innerHTML = mid(html, len(sep)+1)    
+
+End function
 
 '----------------------------------------------
 '
@@ -331,43 +396,65 @@ end function
 '----------------------------------------------
 '
 '----------------------------------------------
-function set_log(Message)
-    call set_message(message, frmLog)
-    if (mobidic("saveLog")) then
-        tsLog.writeLine  FormatDateTime(now, vbGeneralDate) & "-" & Message
+function set_log(fncName, sMessage)
+dim tsLog
+dim sAppPath  : sAppPath = getAppPath()      
+dim sBeginLog 
+dim sFileLog  
+
+    call set_message(fncName & "-" & sMessage, frmLog)
+    if (mobidic("saveLog") <> 1) then exit function
+    if tsLogTimeStamp = "" then 
+        tsLogTimeStamp =  replace(replace(FormatDateTime(now, 0),"/" , "-"),":","-") 'vbGeneralDate = 0'
+   
+        sBeginLog = "Drive : {drive} - Tempo : {tempo} - fichier : {fileName} - language : {language} - esssai : {essais}"
+        sBeginLog = replace(sBeginLog, "{drive}", mobidic("drive"))
+        sBeginLog = replace(sBeginLog, "{tempo}", mobidic("tempo"))
+        sBeginLog = replace(sBeginLog, "{fileName}", mobidic("fileName"))
+        sBeginLog = replace(sBeginLog, "{language}", mobidic("language"))
+        sBeginLog = replace(sBeginLog, "{essais}", mobidic("essais"))
     end if
+    
+    sFileLog = sAppPath & "log\WakeUp_Dock-" & tsLogTimeStamp & ".log" 
+    Set tsLog = fso.OpenTextFile(sFileLog , 8, True ) 'ForAppending = 8'
+
+    if sBeginLog <> "" then 
+        call tsLog.writeLine(string(80,"-"))
+        call tsLog.writeLine(sBeginLog)
+        call tsLog.writeLine(string(80,"-"))
+    end if
+    
+    tsLog.writeLine FormatDateTime(now, 0) & "-" & fncName & "-" & sMessage
+    tsLog.close
+
 end function
+
 '----------------------------------------------
 '
 '----------------------------------------------
-sub beginLog () 
-dim sBeginLog
-
-    set tsLog = createFile("log\WakeUp_Dock.log")
-    sBeginLog = "Drive : {drive} - Tempo : {tempo} - fichier : {fileName} - language : {language} - esssai : {essais}"
-    sBeginLog = replace(sBeginLog, "{drive}", mobidic("drive"))
-    sBeginLog = replace(sBeginLog, "{tempo}", mobidic("tempo"))
-    sBeginLog = replace(sBeginLog, "{fileName}", mobidic("fileName"))
-    sBeginLog = replace(sBeginLog, "{language}", mobidic("language"))
-    sBeginLog = replace(sBeginLog, "{essais}", mobidic("essais"))
-    set_log string(80,"-")
-    set_log sBeginLog
-    set_log string(80,"-")
-end sub
+function getAppPath () 
+dim sPath 
+dim h
+    h=instrrev(WakeUpDockHTA.commandLine,"\")
+    sPath = left(WakeUpDockHTA.commandLine,h)
+    sPath = mid(spath,2)
+    getAppPath = sPath
+end function
 
 '----------------------------------------------
 '
 '----------------------------------------------
 sub initTemporisation( )
 
-
-    set_log dico("msg_initTempo")
-    mobidic("tempo") = frmTemporisation.value
+    call clearLog()
+    
+    call set_log ("initTemporisation", dico("msg_initTempo"))
+    mobidic("tempo") = frmTempo.value
     mobidic("essais") = frmEssais.value
     mobidic("fileName") = frmFileName.value
     mobidic("drive") = lstDrives.value
-    bolok = true
-    update_buttons(0)
+    gBolOk = true
+    update_buttons 0
     beginTime = Now()
     Duree = 0
 
@@ -375,148 +462,326 @@ sub initTemporisation( )
     call set_message(FormatDateTime(Now, vbGeneralDate), frmEndDate) 
     
 end sub
-
 '----------------------------------------------
 '
 '----------------------------------------------
-sub runTemporisation( )
-dim newFile
-dim h , nbEssai
+sub runTemporisation_multi(lstDrives)
+dim drive
+dim h
+dim drivesErr : drivesErr = ""
+dim drivesOk  :  drivesOk = ""
+dim bolOk
+dim R
+dim msg
+dim numErr
+
+    initTemporisation()
+    update_buttons 2
+    
+'     numErr = sleep(3) 
+'     if numErr > 0 then 
+'         alert "error sleep" 
+'         update_buttons 0
+' 
+'         ''err.raise numErr
+'         exit sub
+'     end if 
+    'gBolOk = true
+    call set_log ("runTemporisation_multi", "lstDrives : " & lstDrives)
+    
+'''    msgbox dico("msg_function_not_implemented") &  " : " & lstDrives
+    for h = 1 to len(lstDrives)
+        drive = mid(lstDrives,h,1)
+        call set_log ("runTemporisation_multi", "drive : " & drive)
+        bolOk = isRuning(cstCreateFile, drive) 
+        if not bolOk then
+          msg = replace(dico("msg_function_drive_err"),"{drive}", drive)
+          msg = replace(msg, "\n", chr(13))
+          r = msgbox(msg, 4 + 4096)   'vbTesNo + vbSystemModal' 
+          if r <> 6 then 
+              exit sub
+          end if
+        else
+            drivesOk = drivesOk  & drive
+        end if
+        ''if not gBolOk then exit for
+    next
+
+    '-------------------------------------------------'    
+    msg = replace(dico("msg_function_drive_ok"),"{drives}", drivesOk)
+    r = msgbox(msg, 4 + 4096)   'vbTesNo + vbSystemModal' 
+    if r <> 6 then 
+        exit sub
+    end if
+    
+    mobidic("drives") = drivesOk
+    call set_log ("runTemporisation_multi", "lstDrives ok : " & lstDrives)
+    call runTemporisation_ok(drivesOk)
+    call clearAllTempFile(drivesOk)
+    '''alert "fin de traitement"
+    update_buttons 0
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub runTemporisation_ok(lstDrives)
+dim fichierTXT : fichierTXT = ""
+dim h : h = 0
+dim k : k = 0
+dim drive
+dim bolOk
+
+    update_buttons 1
+''' msgbox "runTemporisation_one ===>1"
+    call set_log ("runTemporisation_ok", "lstDrives ok : " & lstDrives)
+    gBolOk = true
+    
+    do while  gBolOk
+            h = h + 1            
+        
+        for k = 1 to len(lstDrives)
+            drive = mid(lstDrives, k, 1)
+            update_timer()
+            on error resume next
+            if fso.fileExists(fichierTXT) AND fichierTXT <> "" then
+                call set_log ("runTemporisation_ok", dico("msg_deleteFile") & fichierTXT)
+                fso.deleteFile(fichierTXT)
+            end if
+            on error goto 0
+
+            fichierTXT =  drive  & ":\" & mobidic("fileName") & "_" & h & ".txt"   
+            call set_message(h, frmCounter)            
+            '*** Création du fichier de temporisation
+            on error resume next
+            call set_log ("runTemporisation_ok", fichierTXT)
+        '---------------------------------------------
+            bolOk = createFile(fichierTXT, dico("msg_data1"))
+            '''alert fichierTXT   
+            if not bolOk then
+'                 call set_log ("runTemporisation_ok", dico("Operation annulée"))
+'                 update_buttons(0)
+                call set_log ("runTemporisation_ok", "probleme : " & fichierTXT)
+                gBolOk = false
+                exit sub
+            end if
+
+
+
+            if not isRuning(0, drive) then
+                call set_log ("runTemporisation_ok", dico("msg_stopProcess"))
+                gBolOk = false
+            end if
+            if not gBolOk then exit for
+        next
+        if sleep(mobidic("tempo")) > 0 then gBolOk = false
+        if not gBolOk then exit do
+    loop 
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub clearAllTempFile(lstDrives)
+'''dim lstDrives : lstDrives = mobidic("drives")
+dim h 
+    for h = 1 to len(lstDrives)
+        call clearTempFile(mid(lstDrives, h, 1))
+    next
+
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub clearTempFile(drive)
+dim sFile
+dim fld, f 
+dim lgRootName : lgRootName = len(mobidic("fileName")) 
+
+    sFile = drive  & ":\" & mobidic("fileIsRunning")
+    if fso.fileExists(sFile) then
+        fso.deleteFile sFile
+        call set_log ("clearTempFile", "suppression de  : " & sFile)
+    end if   
+    
+    
+    set fld = fso.getFolder(drive & ":\")
+    for each f in fld.files
+        if (left(f.name, lgRootName) = mobidic("fileName")) then
+            f.delete
+        end if 
+    next
+    
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub clearLog()
+dim fld, f 
+dim sAppPath  : sAppPath = getAppPath()
+
+    set fld = fso.getFolder(sAppPath & "log")
+    for each f in fld.files
+        if (right(f.name, 4) = ".log") then
+            f.delete
+        end if 
+    next
+    
+end sub
+'----------------------------------------------
+'
+'----------------------------------------------
+sub runTemporisation_one(drive)
+dim newFileTempo
+dim h , nbEssai, bolOk
+    currentDrive = drive
     
     if (mobidic("saveLog")) then beginLog()
-
+''' msgbox "runTemporisation_one ===>1"
     initTemporisation()
     
     fichierTXT=""
     update_buttons(1)
-'''if  mobidic("drive")="" then mobidic("drive")="N"
+'''if  drive="" then drive="N"
      ' creation du fichier isRuning      
-    if not isRuning(cstCreateFile) then
+''' msgbox "runTemporisation_one ===>2"
+    if not isRuning(cstCreateFile, drive) then
         update_buttons(0)
         exit sub
     end if
     
-    set_log dico("msg_runTempo")
 
+    call set_log ("runTemporisation_one", dico("msg_runTempo"))
+
+'''msgbox "runTemporisation_one ===>3"
     h = 0
-    do while  bolok
+    do while  gBolOk
         
         update_timer()
         on error resume next
         if fso.fileExists(fichierTXT) AND fichierTXT <> "" then
-            set_log dico("msg_deleteFile") & fichierTXT
+            call set_log ("runTemporisation_one", dico("msg_deleteFile") & fichierTXT)
             fso.deleteFile(fichierTXT)
         end if
         on error goto 0
         
         h = h + 1
         call set_message(h, frmCounter)
-        'fichierTXT =  mobidic("drive")  & ":\" & replace(mobidic("fileName"),"[counter]",h) 
-        fichierTXT =  mobidic("drive")  & ":\" & mobidic("fileName") & "_" & h & ".txt" 
+        'fichierTXT =  drive  & ":\" & replace(mobidic("fileName"),"[counter]",h) 
+        fichierTXT =  drive  & ":\" & mobidic("fileName") & "_" & h & ".txt" 
+''''        msgbox "runTemporisation_one ===>" & fichierTXT
 
         '*** Création du fichier de temporisation
         on error resume next
-        set_log dico("msg_createFile") & fichierTXT
+        call set_log ("runTemporisation_one", dico("msg_createFile") & fichierTXT)
+ '''msgbox fichierTXT
         '---------------------------------------------
-        Set newFile = createFile(fichierTXT)
-        if newFile is nothing then
-            set_log dico("Operation annulée")
+        bolOk = createFile(fichierTXT, dico("msg_data1"))
+        if not bolOk then
+            call set_log ("runTemporisation_one", dico("Operation annulée"))
             update_buttons(0)
             exit sub
         end if
 
-
-          '*** Ecriture des données dans le fichier texte.
-          newFile.WriteLine(dico("msg_data1"))
-
-          newFile.Close
-
-
         sleep mobidic("tempo")
 
-        if not isRuning(0) then
-            set_log dico("msg_stopProcess")
-            bolOk=false
+        if not isRuning(0, drive) then
+            call set_log ("runTemporisation_one", dico("msg_stopProcess"))
+            bolOk = false
         end if
         
     loop
     '--- FIN DE LA BOUCLE --------------------------------------
     if fso.fileExists(fichierTXT) then
-        set_log dico("msg_deleteFile") & fichierTXT
+        call set_log ("runTemporisation_one", dico("msg_deleteFile") & fichierTXT)
         fso.deleteFile(fichierTXT)
     end if
     isRunning cstDeleteFile 
     
     update_timer()
-    update_buttons(0)
-    set_log dico("msg_endTempo")
-    if (mobidic("saveLog")) then tsLog.close
+    '''update_buttons(0)
+    call set_log ("runTemporisation_one", dico("msg_endTempo"))
+
 end sub
 
 '----------------------------------------------
 '
 '----------------------------------------------
-function createFile(sFile)
-dim h, newFile, bolOk, msg
+function createFile(sFile, sMessage)
+dim h : h = 0
+dim j : j = 0
+dim newFile2Open, msg
+dim bolOk : bolOk = false
     
-    h = 0
+ 
     on error resume next
-    
+j=j+1: call set_log ("createFile", "createFile-" &  j)   
+    '-----------------------------------------------'
     do while true
         h = h + 1
+j=j+1: call set_log ("createFile", j)   
         msg = replace(dico("msg_testReadDrive"), "{drive}", sFile)
         msg = replace(msg, "{tentatives}", h)
         msg = replace(msg, "{essais}", mobidic("essais"))
-        set_log msg
+        call set_log ("createFile", msg)
+j=j+1: call set_log ("createFile", j)   
         
         err.clear
-        Set newFile = fso.CreateTextFile(sFile, TRUE)
+        Set newFile2Open = fso.CreateTextFile(sFile, TRUE)
+j=j+1: call set_log ("createFile", j & "===>" & sFile)   
         
-        if err.number = 0 then 
-            exit do       
-        else
-            
-'msgbox h & "/" & mobidic("essais")  & "=" & err.number & " - ici - " & mobidic("drive") & "-" & fichierTXT
+        if newFile2Open is nothing then
+j=j+1: call set_log ("createFile", j & "===>" & sFile)   
+            call set_log ("createFile", "Echec " & h & " de la creationn du fichier : " & sFile)
             if h > cInt(mobidic("essais")) then
-                msgbox dico("msg_errCreateFile") & " " &  mobidic("drive")
-                set createFile = nothing
-                exit function
+                call set_log ("createFile", "Impossible de creer le fichier : " & sFile)
+                exit do
             end if
-            sleep 5
+        else
+j=j+1: call set_log ("createFile zz", j & "===>" & sFile)   
+            call newFile2Open.WriteLine(sMessage)
+            call newFile2Open.close()
+            bolOk = true
+            exit do
         end if
+        
+        if sleep(8) > 0  then exit do
         
     loop
     
     on error goto 0
-    set createFile = newFile
+    createFile = bolOk
     
 end function
 '----------------------------------------------
 '
 '----------------------------------------------
-function isRuning(action)
+function isRuning(action, drive)
 dim r , sFile, tsIsRunning
     
-    sFile = lstDrives.value & ":\$_isRuning.txt" 
-
+    if drive = "" then
+        isRuning = false
+        exit function
+    end if
+    '------------------------------------'
+    sFile = drive  & ":\" & mobidic("fileIsRunning")
+    
     select case(action)
     case cstCreateFile: '*** creation du fichier
-        set tsIsRunning = createFile(sFile)
-        if tsIsRunning is nothing then
-            r = false
+        r = createFile(sFile, drive & " is running")
+        if r then 
+            call set_log ("isRuning", "ok : " + sFile)
         else
-            tsIsRunning.WriteLine("is running")
-            tsIsRunning.close
-            r = true
+            call set_log ("isRuning", "no : " + sFile)
         end if
         
     case cstDeleteFile: '*** suppression du fichier
-        set_log dico("msg_deleteFile") & sFile
+        call set_log ("isRuning", dico("msg_deleteFile") & sFile)
         if fso.fileExists(sFile) then
             fso.deleteFile sFile
-            set_log dico("msg_deleteFile") & sFile
+            call set_log ("isRuning", dico("msg_deleteFile") & sFile)
+          r = true
+        else
+          r = false
         end if
-        r = false
         
     case else: 'cstStatusFile *** etat du fichier
         r = fso.fileExists(sFile)
@@ -528,13 +793,19 @@ end function
 '----------------------------------------------
 '
 '----------------------------------------------
-sub sleep (nbSecondes) 
+function sleep (nbSecondes) 
 dim sFilePath 
+dim numErr : numErr = 0
 
+  err.clear
   sFilePath =  "include\sleep.vbs"
-  oShell.Run sFilePath & " " & nbSecondes, 1, True
-
-end sub
+  numErr = oShell.Run (sFilePath & " " & nbSecondes, 1, True)
+'     if numErr > 0 then 
+'         msgbox "error: " & numErr
+'         'quit
+'     end if
+    sleep = numErr
+end function
 
 
 '==============================================================
@@ -552,30 +823,37 @@ end sub
             </select></td>
           <td class="tdDescription" id="msg_langInterface">Langue</td>
         </tr>
-        <tr>
+        <tr name="trLstDrives" id="trlstDrives" style="display: ;">
           <td class="tdCaption" id="msg_libLecteur">Lecteur</td>
           <td class="tdValue">
                 <select name="lstDrives" id="lstDrives"></select>
                 &nbsp;&nbsp;&nbsp;
-                <button class="btnActionRefresh" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
+                <button style="width: 50;height: 20px;" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
             </td>
           <td class="tdDescription" id="msg_LecteurToWakeUp">Lettre du lecteur à réveiller</td>
         </tr>
-       <tr>
-          <td class="tdCaption" id="msg_libTempo">Temporisation</td>
-          <td class="tdValue">
-            <input maxlength="5" size="5" name="frmTemporisation"  id="frmTemporisation" class="parameters" value="60" readonly style="color:black;">
-            &nbsp;&nbsp;&nbsp;
-            <button class="btnActionInp" type="button" name="cmdUpdateTempo" value="cmdUpdateTempo" onclick="event_updateTempo()">...</button>
-          </td>
-          <td sclass="tdDescription" id="msg_duree">Durée en secondes de la termporisation</td>
+
+        <tr name="trChkDrives" id="trChkDrives" style="display: none;">
+          <td class="tdCaption" id="msg_libDrives">Lecteurs</td>
+          <td class="tdValue" colspan="2" width="100%"><fieldset name="divDrives" id="divDrives" class="divDrives">zzz</fieldset></td>
+          
         </tr>
-       <tr>
-          <td class="tdCaption" id="msg_libNbEssai">Nombre d'essai</td>
-          <td class="tdValue">
+
+        <tr>
+            <td class="tdCaption" id="msg_libTempo">Temporisation</td>
+            <td class="tdValue">
+              <input maxlength="5" size="5" name="frmTempo"  id="frmTempo" class="parameters" value="60" readonly style="color:black;">
+              &nbsp;&nbsp;&nbsp;
+              <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateTempo" onclick="event_updateFrmInput('tempo')">...</button>
+            </td>
+            <td sclass="tdDescription" id="msg_duree">Durée en secondes de la termporisation</td>
+        </tr>
+        <tr>
+            <td class="tdCaption" id="msg_libNbEssai">Nombre d'essai</td>
+            <td class="tdValue">
             <input maxlength="5" size="5" name="frmEssais"  id="frmEssais" class="parameters" value="60" readonly style="color:black;">
             &nbsp;&nbsp;&nbsp;
-            <button class="btnActionInp" type="button" name="cmdUpdateTempo" value="cmdUpdateEssais" onclick="event_updateEssais()">...</button>
+            <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateEssais" onclick="event_updateFrmInput('essais')">...</button>
           </td>
           <td sclass="tdDescription" id="msg_Essais">Nb essais</td>
         </tr>
@@ -625,24 +903,28 @@ end sub
         <tr>
           <td class="tdCaption" id="msg_libDon"></td>
           <td><center><img src="images/PayPal-donate-01.png" height="32px" alt="" title="" onclick="event_openURL('https://www.paypal.com/donate?hosted_button_id=H9EMH5M4XA48A')"></center></td>
-          <td><img src="images/github-02.png" height="32px" alt="" title="" onclick="event_openURL('https://github.com/JJDai54/WakeUp_Dock')">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <img src="images/help-01.png" height="32px" alt="" title="" onclick="event_openHelp()"></td>
+          <td>
+            <img src="images/github-02.png" height="32px" alt="" title="" onclick="event_openURL('https://github.com/JJDai54/WakeUp_Dock')">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="images/help-01.png" height="32px" alt="" title="" onclick="event_openHelp()">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="images/cocotte-blue.png" height="32px" alt="" title="" onclick="event_openURL('https://oritheque.fr')">
+          </td>
         </tr>
-      </tbody>
-    <tr><hr><td colspan="3">
+    <tr><td colspan="3"><hr>
     <br>
     <div style="margin:0px 0px 12px 0px;width:90%;height:44px;padding:0px;text-align:center;">
-      <button class="btnAction" type="button" name="cmdRun"  value="cmdRun" onclick="event_runTemporisation()">Lancer la temporisation</button>
-      <button class="btnAction" type="button" name="cmdStop" value="cmdStop" onclick="event_stopTemporisation()">Stoper la temporisation</button>
-      <button class="btnAction" type="button" name="cmdSaveConfig" value="cmdSaveConfig" onclick="event_saveConfig()">Sauver la config</button>
-      <button class="btnAction" type="button" name="cmdQuit" value="cmdQuit" onclick="event_closeTemporisation()">Fermer</button><br>
+      <button class="btnAction" type="button" name="cmdRun"   id="cmdRun"  value="cmdRun" onclick="event_runTemporisation()">Lancer la temporisation</button>
+      <button class="btnAction" type="button" name="cmdStop"  id="cmdStop" value="cmdStop" onclick="event_stopTemporisation()">Stoper la temporisation</button>
+      <button class="btnAction" type="button" name="cmdSaveConfig"  id="cmdSaveConfig" value="cmdSaveConfig" onclick="event_saveConfig()">Sauver la config</button>
+      <button class="btnAction" type="button" name="cmdQuit"  id="cmdQuit" value="cmdQuit" onclick="event_closeTemporisation()">Fermer</button><br>
       <br>
 
     </div>
     </td>
     </tr>
   </div>
+      </tbody>
     </table>
 </body>
 

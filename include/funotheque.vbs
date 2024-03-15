@@ -18,13 +18,13 @@ end function
 '----------------------------------------------
 '
 '----------------------------------------------
-sub sleep (nbSecondes) 
-dim sFilePath 
-
-  sFilePath =  "sleep.vbs"
-  oShell.Run sFilePath & " " & nbSecondes, 1, True
-
-end sub
+' function sleep (nbSecondes) 
+' dim sFilePath 
+' 
+'   sFilePath =  "include\sleep.vbs"
+'   sleep = oShell.Run (sFilePath & " " & nbSecondes, 1, True)
+' 
+' end function
 '----------------------------------------------
 '
 '----------------------------------------------
@@ -92,16 +92,20 @@ end sub
 '----------------------------------------------
 '
 '----------------------------------------------
+function alert(msg)
+    msgbox msg
+end function
+
 function get_activeDrives()
 dim h
-dim lecteurs
+dim drives
     for h=1 to 26
         if fso.FolderExists(chr(h+64) & ":\") then
-            lecteurs = lecteurs & chr(h+64) 
+            drives = drives & chr(h+64) 
         end if
     next
 
-    get_activeDrives = lecteurs
+    get_activeDrives = drives
 end function
 
 '----------------------------------------------

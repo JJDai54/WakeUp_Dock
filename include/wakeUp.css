@@ -77,7 +77,7 @@ select {
     background:#FFCCCC;
 }
 .divDrives{
-    width:250px;
+    width:500px;
     border 0px solid red;
     background:#DFDFDF;
 }
@@ -86,6 +86,7 @@ select {
     width: 50;
     height: 20px;
     cursor:pointer;
+    margin-left:25px;
 }
 .btnActionInp{
     width: 25px; 

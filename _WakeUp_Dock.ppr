@@ -37,37 +37,38 @@ _WakeUp_Dock
 0=WakeUp_Dock.hta
 1=include\funotheque.vbs
 2=config.ini
-3=language\english.ini
-4=include\wakeUp.js
-5=include\wakeUp.css
-6=language\french.ini
+3=language\french.ini
+4=language\english.ini
+5=include\wakeUp.js
+6=include\wakeUp.css
 7=..\..\..\..\..\zzz\Nouveau1.hta
 8=include\sleep.vbs
 9=..\..\copy to github.bat
+10=language\german.ini
 [Selected Project Files]
 Main=
-Selected=..\..\copy to github.bat
+Selected=WakeUp_Dock.hta
 [WakeUp_Dock.hta]
-TopLine=810
-Caret=1,817
+TopLine=1
+Caret=15,9
 [include\funotheque.vbs]
 TopLine=1
 Caret=3,28
 [config.ini]
 TopLine=1
 Caret=14,9
+[language\french.ini]
+TopLine=1
+Caret=1,54
 [language\english.ini]
 TopLine=1
-Caret=5,3
+Caret=1,54
 [include\wakeUp.js]
 TopLine=1
 Caret=10,20
 [include\wakeUp.css]
-TopLine=66
+TopLine=62
 Caret=22,89
-[language\french.ini]
-TopLine=1
-Caret=1,22
 [..\..\..\..\..\zzz\Nouveau1.hta]
 TopLine=1
 Caret=1,4
@@ -77,3 +78,6 @@ Caret=19,15
 [..\..\copy to github.bat]
 TopLine=1
 Caret=25,6
+[language\german.ini]
+TopLine=16
+Caret=1,54

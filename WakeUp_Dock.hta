@@ -6,7 +6,7 @@
   APPLICATIONNAME="WakeUp Dock"
   ID="WakeUpDockHTA"
   SINGLEINSTANCE="no"
-  VERSION="4.6 du 12/03/2024 [Auteur : <JJ Delalandre>jjdelalandre@gmail.com]"
+  VERSION="4.8 du 04/04/2024 [Auteur : <JJ Delalandre>jjdelalandre@gmail.com]"
   ICON="favicone_cocotte_blue.png"
   SCROLL="no"
   CLOSE="no"
@@ -100,7 +100,7 @@ end sub
 sub Window_onUnload()
 call set_log ("Window_onUnload", "begin")
     call isRuning (2, "")
-    call set_log ("Window_onUnload", mobidic("msg_quit"))
+    call set_log ("Window_onUnload", mobidic("MSG_QUIT"))
 end sub
 '----------------------------------------------
 '
@@ -205,7 +205,7 @@ end sub
 sub event_stopTemporisation( )
 call set_log ("event_stopTemporisation", "begin")
 dim r
-    call set_log ("event_stopTemporisation", dico("msg_stopTempo"))
+    call set_log ("event_stopTemporisation", dico("MSG_STOP_TEMPO"))
     call isRuning (2,"")
     gBolOk = false
     update_buttons 2
@@ -254,35 +254,35 @@ end function
 function update_interface_language () 
 call set_log ("update_interface_language", "begin")
   
-    cmdRun.innerHTML = dico("msg_executeTempo")
-    cmdStop.innerHTML = dico("msg_kilTempo")
-    cmdSaveConfig.innerHTML = dico("msg_SaveConfig")
-    cmdQuit.innerHTML = dico("msg_closeWindow")
-    cmdUpdateDrives.innerHTML = dico("msg_refreshDrives") 
+    cmdRun.innerHTML = dico("BTN_EXECUTETEMPO")
+    cmdStop.innerHTML = dico("BTN_KILL_TEMPO")
+    cmdSaveConfig.innerHTML = dico("BTN_SAVE_CONFIG")
+    cmdQuit.innerHTML = dico("BTN_CLOSE_WINDOW")
+    cmdUpdateDrives.innerHTML = dico("BTN_REFRESH_DRIVES") 
      
-    msg_libLecteur.innerHTML = dico("msg_libLecteur")
-    msg_libLanguage.innerHTML = dico("msg_libLanguage")
-    msg_libTempo.innerHTML = dico("msg_libTempo")
-    msg_libFile.innerHTML = dico("msg_libFile")
-    msg_libBeginDate.innerHTML = dico("msg_libBeginDate")
-    msg_libEndDate.innerHTML = dico("msg_libEndDate")
-    msg_libDuree.innerHTML = dico("msg_libDuree")
-    msg_libCounter.innerHTML = dico("msg_libCounter")
-    msg_libLog.innerHTML = dico("msg_libLog")
-    msg_libNbEssai.innerHTML = dico("msg_libNbEssai")
-    msg_libChkLog.innerHTML = dico("msg_libChkLog")
+    LIB_LECTEURS_TO_WAKEUP.innerHTML = dico("LIB_LECTEURS_TO_WAKEUP")
+    LIB_LANG_INTERFACE.innerHTML = dico("LIB_LANG_INTERFACE")
+    LIB_TEMPO.innerHTML = dico("LIB_TEMPO")
+    LIB_FILE_NAME.innerHTML = dico("LIB_FILE_NAME")
+    LIB_BEGIN_DATE.innerHTML = dico("LIB_BEGIN_DATE")
+    LIB_END_DATE.innerHTML = dico("LIB_END_DATE")
+    LIB_DUREE_OF_PROCESS.innerHTML = dico("LIB_DUREE_OF_PROCESS")
+    LIB_NB_WAKEUP.innerHTML = dico("LIB_NB_WAKEUP")
+    LIB_LOG.innerHTML = dico("LIB_LOG")
+    LIB_NB_ESSAIS.innerHTML = dico("LIB_NB_ESSAIS")
+    ''LIB_CHKLOG.innerHTML = dico("LIB_CHKLOG")
     
-    msg_LecteurToWakeUp.innerHTML = dico("msg_lecteurToWakeUp")
-    msg_duree.innerHTML = dico("msg_duree")
-    msg_fileName.innerHTML = dico("msg_fileName")
-    msg_dateBegin.innerHTML = dico("msg_dateBegin")
-    msg_dateEnd.innerHTML = dico("msg_dateEnd")
-    msg_dureeOfProcess.innerHTML = dico("msg_dureeOfProcess")
-    msg_nbWakeUp.innerHTML = dico("msg_nbWakeUp")
-    msg_langInterface.innerHTML = dico("msg_langInterface")
-    msg_Essais.innerHTML = dico("msg_Essais")
-    msg_log.innerHTML = dico("msg_log")
-    msg_chkLog.innerHTML = dico("msg_chkLog")
+    LIB_LECTEURS_TO_WAKEUP_DESC.innerHTML = dico("LIB_LECTEURS_TO_WAKEUP_DESC")
+    LIB_TEMPO_DESC.innerHTML = dico("LIB_TEMPO_DESC")
+    LIB_FILE_NAME_DESC.innerHTML = dico("LIB_FILE_NAME_DESC")
+    LIB_BEGIN_DATE_DESC.innerHTML = dico("LIB_BEGIN_DATE_DESC")
+    LIB_END_DATE_DESC.innerHTML = dico("LIB_END_DATE_DESC")
+    LIB_DUREE_OF_PROCESS_DESC.innerHTML = dico("LIB_DUREE_OF_PROCESS_DESC")
+    LIB_NB_WAKEUP_DESC.innerHTML = dico("LIB_NB_WAKEUP_DESC")
+    LIB_LANG_INTERFACE_DESC.innerHTML = dico("LIB_LANG_INTERFACE_DESC")
+    LIB_NB_ESSAIS_DESC.innerHTML = dico("LIB_NB_ESSAIS_DESC")
+    LIB_LOG.innerHTML = dico("LIB_LOG")
+    LIB_CHKLOG_DESC.innerHTML = dico("LIB_CHKLOG_DESC")
 
 End function
 '----------------------------------------------
@@ -339,7 +339,7 @@ call set_log ("update_buttons", "begin")
 
     
     update_buttons = true  
- ''   call set_log ("update_buttons", dico("msg_stopTempo") & "(" & mobidic("tempo") & " secondes)") 
+ ''   call set_log ("update_buttons", dico("MSG_STOP_TEMPO") & "(" & mobidic("tempo") & " secondes)") 
 end function
 
 
@@ -467,7 +467,7 @@ call set_log ("initTemporisation", "begin")
 
     call clearLog()
     
-    call set_log ("initTemporisation", dico("msg_initTempo"))
+    call set_log ("initTemporisation", dico("MSG_INIT_TEMPO"))
     mobidic("tempo") = frmTempo.value
     mobidic("essais") = frmEssais.value
     mobidic("fileName") = frmFileName.value
@@ -509,13 +509,13 @@ dim numErr
     'gBolOk = true
     call set_log ("runTemporisation_multi", "lstDrives : " & lstDrives)
     
-'''    msgbox dico("msg_function_not_implemented") &  " : " & lstDrives
+'''    msgbox dico("MSG_FUNCTION_NOT_IMPLEMENTED") &  " : " & lstDrives
     for h = 1 to len(lstDrives)
         drive = mid(lstDrives,h,1)
         call set_log ("runTemporisation_multi", "drive : " & drive)
         bolOk = isRuning(cstCreateFile, drive) 
         if not bolOk then
-          msg = replace(dico("msg_function_drive_err"),"{drive}", drive)
+          msg = replace(dico("ERR_DRIVE_NOT_CONNECTED"),"{drive}", drive)
           msg = replace(msg, "\n", chr(13))
           r = msgbox(msg, 4 + 4096)   'vbTesNo + vbSystemModal' 
           if r <> 6 then 
@@ -528,7 +528,7 @@ dim numErr
     next
 
     '-------------------------------------------------'    
-    msg = replace(dico("msg_function_drive_ok"),"{drives}", drivesOk)
+    msg = replace(dico("MSG_DRIVE_OK_TO_CONTINUED"),"{drives}", drivesOk)
     r = msgbox(msg, 4 + 4096)   'vbTesNo + vbSystemModal' 
     if r <> 6 then 
         exit sub
@@ -565,7 +565,7 @@ dim bolOk
             update_timer()
             on error resume next
             if fso.fileExists(fichierTXT) AND fichierTXT <> "" then
-                call set_log ("runTemporisation_ok", dico("msg_deleteFile") & fichierTXT)
+                call set_log ("runTemporisation_ok", dico("MSG_DELETE_FILE") & fichierTXT)
                 fso.deleteFile(fichierTXT)
             end if
             on error goto 0
@@ -576,7 +576,7 @@ dim bolOk
             on error resume next
             call set_log ("runTemporisation_ok", fichierTXT)
         '---------------------------------------------
-            bolOk = createFile(fichierTXT, dico("msg_data1"))
+            bolOk = createFile(fichierTXT, dico("MSG_DATA1"))
             '''alert fichierTXT   
             if not bolOk then
 '                 call set_log ("runTemporisation_ok", dico("Operation annulée"))
@@ -589,13 +589,16 @@ dim bolOk
 
 
             if not isRuning(0, drive) then
-                call set_log ("runTemporisation_ok", dico("msg_stopProcess"))
+                call set_log ("runTemporisation_ok", dico("MSG_STOP_PROCESS"))
                 gBolOk = false
             end if
             if not gBolOk then exit for
         next
         if sleep(mobidic("tempo")) > 0 then gBolOk = false
-        if not gBolOk then exit do
+        if not gBolOk then 
+            call update_buttons(0)
+            exit do
+        end if
     loop 
 end sub
 '----------------------------------------------
@@ -668,7 +671,7 @@ dim h , nbEssai, bolOk
     end if
     
 
-    call set_log ("runTemporisation_one", dico("msg_runTempo"))
+    call set_log ("runTemporisation_one", dico("MSG_RUN_TEMPO"))
 
     h = 0
     do while  gBolOk
@@ -676,7 +679,7 @@ dim h , nbEssai, bolOk
         update_timer()
         on error resume next
         if fso.fileExists(fichierTXT) AND fichierTXT <> "" then
-            call set_log ("runTemporisation_one", dico("msg_deleteFile") & fichierTXT)
+            call set_log ("runTemporisation_one", dico("MSG_DELETE_FILE") & fichierTXT)
             fso.deleteFile(fichierTXT)
         end if
         on error goto 0
@@ -687,9 +690,9 @@ dim h , nbEssai, bolOk
 
         '*** Création du fichier de temporisation
         on error resume next
-        call set_log ("runTemporisation_one", dico("msg_createFile") & fichierTXT)
+        call set_log ("runTemporisation_one", dico("MSG_CREATE_FILE") & fichierTXT)
         '---------------------------------------------
-        bolOk = createFile(fichierTXT, dico("msg_data1"))
+        bolOk = createFile(fichierTXT, dico("MSG_DATA1"))
         if not bolOk then
             call set_log ("runTemporisation_one", dico("Operation annulée"))
             update_buttons(0)
@@ -699,20 +702,20 @@ dim h , nbEssai, bolOk
         sleep mobidic("tempo")
 
         if not isRuning(0, drive) then
-            call set_log ("runTemporisation_one", dico("msg_stopProcess"))
+            call set_log ("runTemporisation_one", dico("MSG_STOP_PROCESS"))
             bolOk = false
         end if
         
     loop
     '--- FIN DE LA BOUCLE --------------------------------------
     if fso.fileExists(fichierTXT) then
-        call set_log ("runTemporisation_one", dico("msg_deleteFile") & fichierTXT)
+        call set_log ("runTemporisation_one", dico("MSG_DELETE_FILE") & fichierTXT)
         fso.deleteFile(fichierTXT)
     end if
     isRunning cstDeleteFile 
     
     update_timer()
-    call set_log ("runTemporisation_one", dico("msg_endTempo"))
+    call set_log ("runTemporisation_one", dico("MSG_END_TEMPO"))
 
 end sub
 
@@ -731,7 +734,7 @@ dim bolOk : bolOk = false
     '-----------------------------------------------'
     do while true
         h = h + 1
-        msg = replace(dico("msg_testReadDrive"), "{drive}", sFile)
+        msg = replace(dico("MSG_TEST_READ_DRIVE"), "{drive}", sFile)
         msg = replace(msg, "{tentatives}", h)
         msg = replace(msg, "{essais}", mobidic("essais"))
         call set_log ("createFile", msg)
@@ -784,10 +787,10 @@ dim r , sFile, tsIsRunning
         end if
         
     case cstDeleteFile: '*** suppression du fichier
-        call set_log ("isRuning", dico("msg_deleteFile") & sFile)
+        call set_log ("isRuning", dico("MSG_DELETE_FILE") & sFile)
         if fso.fileExists(sFile) then
             fso.deleteFile sFile
-            call set_log ("isRuning", dico("msg_deleteFile") & sFile)
+            call set_log ("isRuning", dico("MSG_DELETE_FILE") & sFile)
           r = true
         else
           r = false
@@ -828,86 +831,86 @@ end function
     <table>
       <tbody>
         <tr>
-          <td class="tdCaption" id="msg_libLanguage">Lecteur</td>
+          <td class="tdCaption" id="LIB_LANG_INTERFACE">Lecteur</td>
           <td class="tdValue">
             <select name="lstLanguage" id="lstLanguage" onChange="event_updateLanguage()">
             </select></td>
-          <td class="tdDescription" id="msg_langInterface">Langue</td>
+          <td class="tdDescription" id="LIB_LANG_INTERFACE_DESC">Langue</td>
         </tr>
         <tr name="trLstDrives" id="trlstDrives" style="display: ;">
-          <td class="tdCaption" id="msg_libLecteur">Lecteur</td>
+          <td class="tdCaption" id="LIB_LECTEURS_TO_WAKEUP">Lecteur</td>
           <td class="tdValue">
                 <select name="lstDrives" id="lstDrives"></select>
                 &nbsp;&nbsp;&nbsp;
                 <button style="width: 50;height: 20px;" type="button" name="cmdUpdateDrives" value="cmdUpdateDrives" onclick="event_updateDrives()">...</button>
             </td>
-          <td class="tdDescription" id="msg_LecteurToWakeUp">Lettre du lecteur à réveiller</td>
+          <td class="tdDescription" id="LIB_LECTEURS_TO_WAKEUP_DESC">Lettre du lecteur à réveiller</td>
         </tr>
 
         <tr name="trChkDrives" id="trChkDrives" style="display: none;">
-          <td class="tdCaption" id="msg_libDrives">Lecteurs</td>
+          <td class="tdCaption" id="LIB_DRIVES">Lecteurs</td>
           <td class="tdValue" colspan="2" width="100%"><fieldset name="divDrives" id="divDrives" class="divDrives">zzz</fieldset></td>
           
         </tr>
 
         <tr>
-            <td class="tdCaption" id="msg_libTempo">Temporisation</td>
+            <td class="tdCaption" id="LIB_TEMPO">Temporisation</td>
             <td class="tdValue">
               <input maxlength="5" size="5" name="frmTempo"  id="frmTempo" class="parameters" value="60" readonly style="color:black;">
               &nbsp;&nbsp;&nbsp;
               <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateTempo" onclick="event_updateFrmInput('tempo')">...</button>
             </td>
-            <td sclass="tdDescription" id="msg_duree">Durée en secondes de la termporisation</td>
+            <td sclass="tdDescription" id="LIB_TEMPO_DESC">Durée en secondes de la termporisation</td>
         </tr>
         <tr>
-            <td class="tdCaption" id="msg_libNbEssai">Nombre d'essai</td>
+            <td class="tdCaption" id="LIB_NB_ESSAIS">Nombre d'essai</td>
             <td class="tdValue">
             <input maxlength="5" size="5" name="frmEssais"  id="frmEssais" class="parameters" value="60" readonly style="color:black;">
             &nbsp;&nbsp;&nbsp;
             <button style="width: 25px; height: 20px;" type="button" name="cmdUpdateTempo" value="cmdUpdateEssais" onclick="event_updateFrmInput('essais')">...</button>
           </td>
-          <td sclass="tdDescription" id="msg_Essais">Nb essais</td>
+          <td sclass="tdDescription" id="LIB_NB_ESSAIS_DESC">Nb essais</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libFile">Fichier</td>
+          <td class="tdCaption" id="LIB_FILE_NAME">Fichier</td>
           <td class="tdValue"><input maxlength="30" size="30" name="frmFileName" class="parameters" value="$_wakeUp_[counter].txt"></td>
-          <td class="tdDescription" id="msg_fileName">Nom du fichier à créer temporairement pour réveiller le Dock</td>
+          <td class="tdDescription" id="LIB_FILE_NAME_DESC">msg_temp_name</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libChkLog"></td>
+          <td class="tdCaption" id="LIB_CHKLOG2"></td>
           <td class="tdValue">
             <div>
                 <input type="checkbox" name="frmChkLog" id="frmChkLog" checked />
-                <label name="msg_chkLog" id="msg_chkLog" for="frmChkLog">Générer un log</label>
+                <label name="LIB_CHKLOG" id="LIB_CHKLOG" for="frmChkLog">Générer un log</label>
             </div>
           </td>
-          <td class="tdDescription" id="msg_log">Généraion d'un log</td>
+          <td class="tdDescription" id="LIB_CHKLOG_DESC">Généraion d'un log</td>
         </tr>
         <tr>
           <td class="" colspan="3"><hr></td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libBeginDate">Date début</td>
+          <td class="tdCaption" id="LIB_BEGIN_DATE">Date début</td>
           <td class="tdValue"><div name="frmBeginDate" id="frmBeginDate"  class="tdCompute" style="width:150px;"></div></td>
-          <td class="tdDescription" id="msg_dateBegin">Date heure de déébut de temporisation</td>
+          <td class="tdDescription" id="LIB_BEGIN_DATE_DESC">Date heure de déébut de temporisation</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libEndDate">Date courante</td>
+          <td class="tdCaption" id="LIB_END_DATE">Date courante</td>
           <td class="tdValue"><div name="frmEndDate" id="frmEndDate"  class="tdCompute" style="width:150px;"></div></td>
-          <td class="tdDescription" id="msg_dateEnd">Date heure de la denire temporisation</td>
+          <td class="tdDescription" id="LIB_END_DATE_DESC">Date heure de la denire temporisation</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libDuree">Duree</td>
+          <td class="tdCaption" id="LIB_DUREE_OF_PROCESS">Duree</td>
           <td class="tdValue"><div name="frmDuree" id="frmDuree"  class="tdCompute" style="width:250px;"></div></td>
-          <td class="tdDescription" id="msg_dureeOfProcess">Duree depuis le lancement de la temporisation</td>
+          <td class="tdDescription" id="LIB_DUREE_OF_PROCESS_DESC">Duree depuis le lancement de la temporisation</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libCounter">Compteur</td>
+          <td class="tdCaption" id="LIB_NB_WAKEUP">Compteur</td>
           <td class="tdValue"><div name="frmCounter" id="frmCounter" class="tdCompute" style="width:50px;">0</div></td>
-          <td class="tdDescription" id="msg_nbWakeUp">Nombre d'écriture depuis le début de la temporisation</td>
+          <td class="tdDescription" id="LIB_NB_WAKEUP_DESC">Nombre d'écriture depuis le début de la temporisation</td>
         </tr>
         <tr>
-          <td class="tdCaption" id="msg_libLog">Log</td>
+          <td class="tdCaption" id="LIB_LOG">Log</td>
           <td  class="tdInfo" colspan="2"><div name="frmLog" id="frmLog"></div></td>
         </tr>
         <tr><td colspan="3"><hr></td></tr>

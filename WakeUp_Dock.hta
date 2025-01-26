@@ -149,7 +149,7 @@ dim obName, obFrm
     if error.number = 0 then
       if newValue <> obFrm.value AND newValue <> 0 AND IsNumeric(newValue) then 
           obFrm.value = newValue
-          mobidic(newValue) = obFrm.value
+          mobidic(sName) = obFrm.value
        end if  
      end if
 end sub
